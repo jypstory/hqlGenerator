@@ -1,0 +1,42 @@
+add jar hdfs://10.10.10.160:9000/Library/hiveudf-1.0.jar;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS SOI_TC_USER (
+    USER_SEQ BIGINT,
+    MBR_ID String,
+    S_ID BIGINT,
+    MDN String,
+    CARD_NO String,
+    DEVICE_ID String,
+    DEVICE_TOKEN String,
+    PF_ID String,
+    PUSH_YN String,
+    CREDATE String,
+    UPDDATE String,
+    DBSTS String,
+    GIS_YN String,
+    PROFILE String,
+    FEEL String,
+    EMAIL String,
+    IMG1 String,
+    IMG2 String,
+    IMG3 String,
+    SMS_YN String,
+    BENE_PUSH_YN String,
+    TR_PUSH_YN String,
+    BIZ_PUSH_YN String,
+    PRESENT_PUSH_YN String,
+    INFO_PUSH_YN String,
+    P2P_PUSH_YN String,
+    OCB_BENEFIT_PUSH_YN String,
+    APP_VERSION String,
+    OPER_DTM string,
+    EIUD_TYPE string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY "\t"
+LOCATION '#<URL>/SERVICES_IAS/SOI/RAW/SOI_TC_USER';
+
+dfs -rm #<URL>/SERVICES_IAS/SOI/RAW/SOI_TC_USER/*;
+
+dfs -mkdir #<URL>/#outputPath#;
+
+LOAD DATA INPATH '#<URL>/#inputPath#/part*' OVERWRITE INTO TABLE SOI_TC_USER;

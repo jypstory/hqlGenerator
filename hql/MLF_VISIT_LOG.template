@@ -1,0 +1,84 @@
+add jar hdfs://10.10.10.160:9000/Library/hiveudf-1.0.jar;
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS CDC_MLF_VISIT_LOG (
+    VISIT_SEQ BIGINT,
+    LF_ID BIGINT,
+    AUTH_TYPE String,
+    AUTH_MEDIUM String,
+    AUTH_VALUE String,
+    AUTH_YN String,
+    MBR_ID String,
+    CREDATE String
+)
+PARTITIONED BY(dt STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY "\t"
+LOCATION '#<URL>/SERVICES_IAS/MLF/CDC/CDC_MLF_VISIT_LOG';
+
+LOAD DATA INPATH '#<URL>/#inputPath#' OVERWRITE INTO TABLE CDC_MLF_VISIT_LOG PARTITION (dt='#{today}');
+
+CREATE EXTERNAL TABLE IF NOT EXISTS MLF_VISIT_LOG (
+    VISIT_SEQ BIGINT,
+    LF_ID BIGINT,
+    AUTH_TYPE String,
+    AUTH_MEDIUM String,
+    AUTH_VALUE String,
+    AUTH_YN String,
+    MBR_ID String,
+    CREDATE String,
+    OPER_DTM string,
+    EIUD_TYPE string
+)
+PARTITIONED BY(dt STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY "\t"
+LOCATION '#<URL>/SERVICES_IAS/MLF/RAW/MLF_VISIT_LOG';
+
+INSERT OVERWRITE TABLE MLF_VISIT_LOG PARTITION (dt='#{today}')
+SELECT #<ColumnRefineList>,
+       from_unixtime(unix_timestamp(), 'yyyy-MM-dd HH:mm:ss') OPER_DTM,
+       'I' EIUD_TYPE
+  FROM CDC_MLF_VISIT_LOG 
+ WHERE dt='#{today}'
+;
+       
+INSERT OVERWRITE TABLE IAS_PROCESS_LOG PARTITION (dt='#{today}', jobId='MLF_VISIT_LOG')
+SELECT 'HDFS' JOB_TYPE,
+       from_unixtime(unix_timestamp(), 'yyyy-MM-dd HH:mm:ss') START_DTTM,
+       from_unixtime(unix_timestamp(), 'yyyy-MM-dd HH:mm:ss') END_DTTM,
+       '#{yesterday}' BASE_DT,
+       SUM(TOTAL_CNT) TOTAL_CNT,
+       SUM(CDC_CNT) PROCESS_CNT,
+       0 UPDATE_CNT,
+       SUM(CDC_CNT) INSERT_CNT
+  FROM (
+       SELECT COUNT(*) CDC_CNT, 0 TOTAL_CNT FROM CDC_MLF_VISIT_LOG WHERE dt='#{today}'
+       UNION ALL
+       SELECT 0 CDC_CNT, COUNT(*) TOTAL_CNT FROM MLF_VISIT_LOG
+       ) X
+;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS STG_MLF_VISIT_LOG (
+    VISIT_SEQ BIGINT,
+    LF_ID BIGINT,
+    AUTH_TYPE String,
+    AUTH_MEDIUM String,
+    AUTH_VALUE String,
+    AUTH_YN String,
+    MBR_ID String,
+    CREDATE String,
+    OPER_DTM string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY "\t"
+LOCATION '#<URL>/SERVICES_IAS/MLF/STG/STG_MLF_VISIT_LOG';
+
+INSERT OVERWRITE TABLE STG_MLF_VISIT_LOG
+SELECT #<ColumnRefineList>,
+       from_unixtime(unix_timestamp(), 'yyyy-MM-dd HH:mm:ss') OPER_DTM
+  FROM CDC_MLF_VISIT_LOG 
+ WHERE dt='#{today}'
+;
+
+dfs -mkdir #<URL>/#outputPath#;
+
+dfs -cp #<URL>/SERVICES_IAS/MLF/STG/STG_MLF_VISIT_LOG/* #outputPath#;
+

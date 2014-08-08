@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="euc-kr"?>
+
+<project name="IAS" default="build" basedir=".">
+	<property file="build.properties"/>
+	<tstamp>
+		<format property="work.date" pattern="yyyyMMddHHmmss"/>
+	</tstamp>
+	<path id="class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+        <pathelement path="${bin.dir}"/>
+	</path>
+	<target name="mkdir">
+        <echo>create bin directory</echo>
+		<mkdir dir="${bin.dir}"/>
+	</target>
+    <!-- Delete classes files -->
+    <target name="clean" description="Delete all classes dirs">
+        <echo>delete class file</echo>
+        <delete quiet="true" includeEmptyDirs="true">
+            <fileset dir="${bin.dir}" />
+        </delete>
+    </target>
+	<target name="compile" depends="mkdir">
+        <echo>start compile</echo>
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" deprecation="off" debug="on" optimize="off" verbose="yes">
+			<classpath refid="class.path"/>
+		</javac>
+		<echo>end compile</echo>
+	</target>
+    <target name="build" depends="clean,compile" description="build">
+        <echo>
+            Build Start.
+        </echo>
+    </target>
+	<target name="run" depends="build" description="run">
+		<java classname="com.skt.ias.QlGenerator">
+			<classpath refid="class.path"/>
+		</java>
+	</target>
+</project>
