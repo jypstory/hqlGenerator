@@ -13,7 +13,7 @@ import com.skt.ias.control.Generator;
  * <p>Company: SK C&C</p>
  * </pre>
  * 
- * @author pjy0313@sk.com
+ * @author jyp
  * @version
  */
 public class QlGenerator {
@@ -21,20 +21,20 @@ public class QlGenerator {
 		Generator generator = new Generator();
 
 		System.out.println("start............");
-		generator.generate("./itf/interfaceList_khb.xls", "./hql", "KHB");  //khub
-		generator.generate("./itf/interfaceList_imc.xls", "./hql", "IMC");  //IMC 정보
-		generator.generate("./itf/interfaceList_isc.xls", "./hql", "ISC");  //Istore coupon
-		generator.generate("./itf/interfaceList_ipc.xls", "./hql", "IPC");  //Istore poc 정보
-		generator.generate("./itf/interfaceList_mbf.xls", "./hql", "MBF");  //모바일전단지
-		generator.generate("./itf/interfaceList_ocp.xls", "./hql", "OCP");  //OCB pass
-		generator.generate("./itf/interfaceList_oct.xls", "./hql", "OCT");  //OCB Tagging
-		generator.generate("./itf/interfaceList_soi.xls", "./hql", "SOI");  //SOI*/
-		generator.generate("./itf/interfaceList_qrm.xls", "./hql", "QRM");  //QRMS
-		generator.generate("./itf/interfaceList_tcp.xls", "./hql", "TCP");  //통합쿠폰
-		generator.generate("./itf/interfaceList_gfc.xls", "./hql", "GFC");  //QRMS
-		generator.generate("./itf/interfaceList_obc.xls", "./hql", "OBC");  //OCB.com
-		generator.generate("./itf/interfaceList_adn.xls", "./hql", "ADN");  //애딩
-		generator.generate("./itf/interfaceList_mlf.xls", "./hql", "MLF");  //모바일 전단
+		generator.generate("./itf/interfaceList_khb.xls", "./hql", "KHB"); 
+//		generator.generate("./itf/interfaceList_imc.xls", "./hql", "IMC");  
+//		generator.generate("./itf/interfaceList_isc.xls", "./hql", "ISC"); 
+//		generator.generate("./itf/interfaceList_ipc.xls", "./hql", "IPC"); 
+//		generator.generate("./itf/interfaceList_mbf.xls", "./hql", "MBF");  
+//		generator.generate("./itf/interfaceList_ocp.xls", "./hql", "OCP"); 
+//		generator.generate("./itf/interfaceList_oct.xls", "./hql", "OCT");  
+//		generator.generate("./itf/interfaceList_soi.xls", "./hql", "SOI");  
+//		generator.generate("./itf/interfaceList_qrm.xls", "./hql", "QRM");  
+//		generator.generate("./itf/interfaceList_tcp.xls", "./hql", "TCP"); 
+//		generator.generate("./itf/interfaceList_gfc.xls", "./hql", "GFC"); 
+//		generator.generate("./itf/interfaceList_obc.xls", "./hql", "OBC"); 
+//		generator.generate("./itf/interfaceList_adn.xls", "./hql", "ADN"); 
+//		generator.generate("./itf/interfaceList_mlf.xls", "./hql", "MLF"); 
 		
 		
 		System.out.println("finish...........");
@@ -43,9 +43,8 @@ public class QlGenerator {
 		Date date = null;
 		try {
 			dateFormat = new SimpleDateFormat("yyyyMMdd");
-			date = dateFormat.parse("20140508");
 			System.out.println("OK");
-			//System.out.println(dateFormat.format(date));
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println("ERROR");
